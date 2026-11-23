@@ -63,38 +63,143 @@
   // ---------- facts (approximate, well-known values) ----------
   const CATS = {
     mountain: { q: 'Peak closest to', unit: 'm', items: [
-      ['Everest', 8849], ['K2', 8611], ['Aconcagua', 6961], ['Denali', 6190], ['Kilimanjaro', 5895],
-      ['Elbrus', 5642], ['Mont Blanc', 4806], ['Matterhorn', 4478], ['Mt Whitney', 4421], ['Mt Fuji', 3776],
-      ['Zugspitze', 2962], ['Mt Olympus', 2918], ['Rysy', 2499], ['Kosciuszko', 2228], ['Ben Nevis', 1345], ['Snowdon', 1085]] },
-    tower: { q: 'Building closest to', suffix: 'tall', unit: 'm', items: [
-      ['Burj Khalifa', 828], ['Tokyo Skytree', 634], ['CN Tower', 553], ['One World Trade', 541], ['Taipei 101', 508],
-      ['Petronas Towers', 452], ['Empire State', 443], ['Eiffel Tower', 330], ['Palace of Culture', 237],
-      ['Gateway Arch', 192], ['Space Needle', 184], ['Great Pyramid', 139], ['Big Ben tower', 96],
-      ['Statue of Liberty', 93], ['Tower of Pisa', 56]] },
+      ['Everest', 8849], ['K2', 8611], ['Kangchenjunga', 8586], ['Lhotse', 8516], ['Makalu', 8485], ['Cho Oyu', 8188],
+      ['Nanga Parbat', 8126], ['Annapurna', 8091], ['Aconcagua', 6961], ['Ojos del Salado', 6893], ['Chimborazo', 6263],
+      ['Denali', 6190], ['Mt Logan', 5959], ['Kilimanjaro', 5895], ['Elbrus', 5642], ['Pico de Orizaba', 5636],
+      ['Mt Kenya', 5199], ['Mt Ararat', 5137], ['Mt Vinson', 4892], ['Puncak Jaya', 4884], ['Mont Blanc', 4806],
+      ['Dufourspitze', 4634], ['Matterhorn', 4478], ['Mt Whitney', 4421], ['Mt Elbert', 4401], ['Mt Rainier', 4392],
+      ['Grossglockner', 3798], ['Mt Fuji', 3776], ['Aoraki / Mt Cook', 3724], ['Mt Teide', 3715], ['Zugspitze', 2962],
+      ['Mt Olympus', 2918], ['Triglav', 2864], ['Gerlach Peak', 2655], ['Mt St Helens', 2549], ['Rysy', 2499],
+      ['Mt Sinai', 2285], ['Kosciuszko', 2228], ['Kasprowy Wierch', 1987], ['Mt Washington', 1917], ['Babia Góra', 1725],
+      ['Śnieżka', 1603], ['Ben Nevis', 1345], ['Vesuvius', 1281], ['Snowdon', 1085], ['Scafell Pike', 978]] },
+    tower: { q: 'Structure closest to', suffix: 'tall', unit: 'm', items: [
+      ['Burj Khalifa', 828], ['Merdeka 118', 679], ['Tokyo Skytree', 634], ['Shanghai Tower', 632], ['Abraj Al-Bait', 601],
+      ['Ping An Finance', 599], ['Lotte World Tower', 555], ['CN Tower', 553], ['One World Trade', 541],
+      ['Ostankino Tower', 540], ['Taipei 101', 508], ['Central Park Tower', 472], ['Petronas Towers', 452],
+      ['Empire State', 443], ['Willis Tower', 442], ['Jin Mao Tower', 421], ['Berlin TV Tower', 368], ['Tokyo Tower', 333],
+      ['Eiffel Tower', 330], ['Burj Al Arab', 321], ['Chrysler Building', 319], ['The Shard', 310],
+      ['Palace of Culture', 237], ['Golden Gate towers', 227], ['Gateway Arch', 192], ['Space Needle', 184],
+      ['Washington Monument', 169], ['Blackpool Tower', 158], ['Cologne Cathedral', 157], ['Great Pyramid', 139],
+      ["St Peter's Basilica", 137], ['London Eye', 135], ['Atomium', 102], ['Big Ben tower', 96], ['Statue of Liberty', 93],
+      ['Taj Mahal', 73], ['Sydney Opera House', 65], ['Tower of Pisa', 56], ['Arc de Triomphe', 50], ['Colosseum', 48]] },
     animal: { q: 'Animal weighing about', unit: 'kg', items: [
-      ['Blue whale', 140000], ['African elephant', 6000], ['Hippo', 1500], ['Giraffe', 1000], ['Cow', 700],
-      ['Horse', 500], ['Polar bear', 450], ['Lion', 190], ['Gorilla', 160], ['Adult human', 70],
-      ['Emperor penguin', 30], ['Beaver', 20], ['Red fox', 6], ['House cat', 4.5], ['Chicken', 2.5],
-      ['Guinea pig', 1], ['Rat', 0.3]] },
+      ['Blue whale', 140000], ['Orca', 5000], ['African elephant', 6000], ['Asian elephant', 4000], ['White rhino', 2300],
+      ['Hippo', 1500], ['Walrus', 1200], ['Great white shark', 1100], ['Giraffe', 1000], ['American bison', 900],
+      ['Cow', 700], ['Horse', 500], ['Saltwater croc', 500], ['Polar bear', 450], ['Grizzly bear', 270], ['Tiger', 220],
+      ['Bottlenose dolphin', 200], ['Lion', 190], ['Gorilla', 160], ['Ostrich', 110], ['Giant panda', 100],
+      ['Adult human', 70], ['Chimpanzee', 50], ['Cheetah', 50], ['Wolf', 40], ['Golden retriever', 30],
+      ['Emperor penguin', 30], ['Beaver', 20], ['Badger', 10], ['Koala', 9], ['Red fox', 6], ['House cat', 4.5],
+      ['Chicken', 2.5], ['Chihuahua', 2], ['Guinea pig', 1], ['Hedgehog', 0.7], ['Grey squirrel', 0.5],
+      ['Pigeon', 0.35], ['Rat', 0.3], ['Sparrow', 0.03], ['House mouse', 0.02], ['Hummingbird', 0.004]] },
     river: { q: 'River closest to', suffix: 'long', unit: 'km', items: [
-      ['Nile', 6650], ['Amazon', 6400], ['Yangtze', 6300], ['Mekong', 4900], ['Mississippi', 3730], ['Volga', 3530],
-      ['Danube', 2850], ['Rhine', 1230], ['Vistula', 1047], ['Seine', 777], ['Hudson', 507], ['Thames', 346]] },
-    country: { q: 'Country with about', suffix: 'people', unit: 'M', items: [
-      ['India', 1440], ['China', 1410], ['USA', 340], ['Indonesia', 280], ['Brazil', 212], ['Japan', 124],
-      ['Germany', 84], ['UK', 68], ['Italy', 59], ['Spain', 48], ['Canada', 41], ['Poland', 37], ['Australia', 27],
-      ['Netherlands', 18], ['Greece', 10.4], ['Norway', 5.5], ['Iceland', 0.39]] },
+      ['Nile', 6650], ['Amazon', 6400], ['Yangtze', 6300], ['Yenisei', 5539], ['Yellow River', 5464], ['Mekong', 4900],
+      ['Paraná', 4880], ['Congo', 4700], ['Lena', 4400], ['Niger', 4180], ['Missouri', 3767], ['Mississippi', 3730],
+      ['Volga', 3530], ['Indus', 3180], ['Rio Grande', 3051], ['Brahmaputra', 2900], ['Yukon', 2875], ['Danube', 2850],
+      ['Euphrates', 2800], ['Zambezi', 2574], ['Ganges', 2525], ['Murray', 2508], ['Ural', 2428], ['Colorado', 2330],
+      ['Dnieper', 2201], ['Orinoco', 2140], ['Don', 1870], ['Rhine', 1230], ['Elbe', 1094], ['Vistula', 1047],
+      ['Tagus', 1007], ['Loire', 1006], ['Ebro', 930], ['Oder', 840], ['Rhône', 813], ['Warta', 808], ['Seine', 777],
+      ['Po', 652], ['Hudson', 507], ['Tiber', 406], ['Shannon', 360], ['Severn', 354], ['Thames', 346]] },
+    people: { q: 'Country with about', suffix: 'people', unit: 'M', items: [
+      ['India', 1440], ['China', 1410], ['USA', 340], ['Indonesia', 280], ['Pakistan', 245], ['Nigeria', 230],
+      ['Brazil', 212], ['Bangladesh', 172], ['Russia', 144], ['Mexico', 130], ['Ethiopia', 130], ['Japan', 124],
+      ['Philippines', 116], ['Egypt', 114], ['DR Congo', 110], ['Vietnam', 100], ['Iran', 90], ['Turkey', 86],
+      ['Germany', 84], ['Thailand', 72], ['UK', 68], ['France', 68], ['South Africa', 63], ['Italy', 59],
+      ['Kenya', 56], ['South Korea', 52], ['Colombia', 52], ['Spain', 48], ['Argentina', 46], ['Algeria', 46],
+      ['Canada', 41], ['Morocco', 38], ['Poland', 37], ['Malaysia', 35], ['Peru', 34], ['Saudi Arabia', 33],
+      ['Nepal', 30], ['Australia', 27], ['Chile', 20], ['Romania', 19], ['Netherlands', 18], ['Czechia', 10.9],
+      ['Portugal', 10.6], ['Sweden', 10.5], ['Greece', 10.4], ['Israel', 9.9], ['Hungary', 9.6], ['Austria', 9.1],
+      ['Switzerland', 8.9], ['Denmark', 5.9], ['Finland', 5.6], ['Norway', 5.5], ['Ireland', 5.3],
+      ['New Zealand', 5.2], ['Croatia', 3.9], ['Lithuania', 2.9], ['Slovenia', 2.1], ['Latvia', 1.9],
+      ['Estonia', 1.4], ['Cyprus', 1.3], ['Luxembourg', 0.67], ['Malta', 0.54], ['Iceland', 0.39], ['Monaco', 0.039]] },
+    area: { q: 'Country closest to', suffix: 'in area', unit: 'km²', items: [
+      ['Russia', 17098000], ['Canada', 9985000], ['China', 9597000], ['Brazil', 8516000], ['Australia', 7692000],
+      ['India', 3287000], ['Argentina', 2780000], ['Kazakhstan', 2725000], ['Algeria', 2382000], ['Saudi Arabia', 2150000],
+      ['Mexico', 1964000], ['Indonesia', 1905000], ['Iran', 1648000], ['Mongolia', 1564000], ['Peru', 1285000],
+      ['South Africa', 1221000], ['Colombia', 1142000], ['Egypt', 1010000], ['Nigeria', 924000], ['Pakistan', 882000],
+      ['Turkey', 784000], ['Chile', 756000], ['Ukraine', 603500], ['France', 551700], ['Thailand', 513000],
+      ['Spain', 506000], ['Sweden', 450000], ['Japan', 378000], ['Germany', 357600], ['Finland', 338000],
+      ['Vietnam', 331000], ['Poland', 312700], ['Italy', 301300], ['New Zealand', 268000], ['UK', 243600],
+      ['Romania', 238400], ['Greece', 132000], ['Cuba', 109900], ['Iceland', 103000], ['South Korea', 100400],
+      ['Hungary', 93000], ['Portugal', 92200], ['Austria', 83900], ['Czechia', 78900], ['Ireland', 70300],
+      ['Croatia', 56600], ['Denmark', 42900], ['Netherlands', 41900], ['Switzerland', 41300], ['Belgium', 30700],
+      ['Israel', 22100], ['Slovenia', 20300], ['Jamaica', 10990], ['Luxembourg', 2590], ['Singapore', 734],
+      ['Malta', 316], ['Monaco', 2]] },
+    island: { q: 'Island closest to', suffix: 'in area', unit: 'km²', items: [
+      ['Greenland', 2166000], ['New Guinea', 785800], ['Borneo', 743300], ['Madagascar', 587000], ['Baffin Island', 507500],
+      ['Sumatra', 473500], ['Honshu', 228000], ['Great Britain', 209300], ['Sulawesi', 180700], ['South Island (NZ)', 150400],
+      ['Java', 138800], ['North Island (NZ)', 113700], ['Luzon', 110000], ['Newfoundland', 108900], ['Cuba', 104600],
+      ['Iceland', 101800], ['Mindanao', 97500], ['Ireland', 84400], ['Hokkaido', 78000], ['Hispaniola', 76200],
+      ['Sakhalin', 72500], ['Sri Lanka', 65600], ['Tasmania', 64500], ['Sicily', 25700], ['Sardinia', 24100],
+      ['Jamaica', 11000], ['Hawaii (Big Island)', 10400], ['Cyprus', 9250], ['Corsica', 8680], ['Crete', 8340],
+      ['Bali', 5780], ['Mallorca', 3640], ['Tenerife', 2030], ['Malta', 246], ['Manhattan', 59]] },
+    movie: { q: 'Movie closest to', suffix: 'long', unit: 'min', items: [
+      ['Return of the King', 201], ['Schindler\'s List', 195], ['Titanic', 194], ['Avatar: Way of Water', 192],
+      ['Avengers: Endgame', 181], ['Oppenheimer', 180], ['Fellowship of the Ring', 178], ['The Godfather', 175],
+      ['Interstellar', 169], ['Dune: Part Two', 166], ['Avatar', 162], ['Gladiator', 155], ['Dune', 155],
+      ['Pulp Fiction', 154], ['The Dark Knight', 152], ['Harry Potter 1', 152], ['Infinity War', 149],
+      ['Inception', 148], ['No Way Home', 148], ['The Avengers', 143], ['Forrest Gump', 142], ['Shawshank Redemption', 142],
+      ['Fight Club', 139], ['The Matrix', 136], ['Black Panther', 134], ['Top Gun: Maverick', 131],
+      ['Jurassic Park', 127], ['Iron Man', 126], ['Jaws', 124], ['Joker', 122], ['Star Wars (1977)', 121],
+      ['Cars', 117], ['Back to the Future', 116], ['E.T.', 115], ['The Incredibles', 115], ['Barbie', 114],
+      ['Ratatouille', 111], ['Zootopia', 108], ['Deadpool', 108], ['Moana', 107], ['Coco', 105], ['Home Alone', 103],
+      ['Frozen', 102], ['Encanto', 102], ['A Minecraft Movie', 101], ['Finding Nemo', 100], ['Tangled', 100],
+      ['WALL-E', 98], ['Up', 96], ['Inside Out', 95], ['Despicable Me', 95], ['Monsters, Inc.', 92],
+      ['Kung Fu Panda', 92], ['Minions', 91], ['Shrek', 90], ['The Lion King (1994)', 88], ['Madagascar', 86],
+      ['Toy Story', 81]] },
+    speed: { q: 'Animal with top speed near', unit: 'km/h', items: [
+      ['Peregrine falcon (dive)', 390], ['Cheetah', 110], ['Pronghorn', 88], ['Lion', 80], ['Greyhound', 72],
+      ['Ostrich', 70], ['Horse', 70], ['Red kangaroo', 70], ['Zebra', 65], ['Giraffe', 60], ['Wolf', 60],
+      ['Grizzly bear', 56], ['Rabbit', 56], ['Rhino', 50], ['Red fox', 50], ['House cat', 48], ['Usain Bolt', 45],
+      ['Elephant', 40], ['Polar bear', 40], ['Gorilla', 40], ['Dolphin', 35], ['Hippo', 30], ['Squirrel', 20],
+      ['Pig', 18], ['Chicken', 14], ['House mouse', 13], ['Tortoise', 0.3], ['Sloth', 0.24], ['Garden snail', 0.05]] },
+    space: { q: 'Space object about', suffix: 'wide', unit: 'km', items: [
+      ['The Sun', 1392700], ['Jupiter', 139820], ['Saturn', 116460], ['Uranus', 50724], ['Neptune', 49244],
+      ['Earth', 12742], ['Venus', 12104], ['Mars', 6779], ['Ganymede', 5268], ['Titan', 5150], ['Mercury', 4879],
+      ['Callisto', 4821], ['Io', 3643], ['The Moon', 3475], ['Europa', 3122], ['Triton', 2707], ['Pluto', 2377],
+      ['Eris', 2326], ['Ceres', 940], ['Vesta', 525], ['Phobos', 22]] },
   };
   const YEARS = [
-    ['First iPhone went on sale', 2007], ['First Moon landing', 1969], ['The Titanic sank', 1912],
-    ['The Berlin Wall fell', 1989], ['World War II ended', 1945], ['First Harry Potter book', 1997],
-    ['YouTube launched', 2005], ['Minecraft full release', 2011], ['Fortnite launched', 2017],
-    ['Columbus reached the Americas', 1492], ['First Star Wars film', 1977], ['Euro coins & notes arrived', 2002],
-    ['First modern Olympics', 1896], ["Wright brothers' first flight", 1903], ['Poland joined the EU', 2004],
-    ['Google was founded', 1998], ['First PlayStation (Japan)', 1994], ['Facebook launched', 2004],
+    ['First iPhone went on sale', 2007], ['First iPad released', 2010], ['Apple was founded', 1976],
+    ['Microsoft was founded', 1975], ['Google was founded', 1998], ['Facebook launched', 2004], ['YouTube launched', 2005],
+    ['Twitter launched', 2006], ['Instagram launched', 2010], ['Snapchat launched', 2011], ['Wikipedia launched', 2001],
+    ['Amazon was founded', 1994], ['Netflix was founded', 1997], ['Spotify launched', 2008], ['Bitcoin was created', 2009],
+    ['ChatGPT was released', 2022], ['First website went online', 1991], ['First email was sent', 1971],
+    ['First text message (SMS) sent', 1992], ['First PlayStation (Japan)', 1994], ['First Xbox released', 2001],
+    ['Nintendo Switch released', 2017], ['Game Boy released', 1989], ['Minecraft full release', 2011],
+    ['Fortnite launched', 2017], ['GTA V released', 2013], ['Tetris was created', 1984], ['Pac-Man released', 1980],
+    ['Super Mario Bros. released', 1985], ['First Pokémon games (Japan)', 1996], ['Roblox launched', 2006],
+    ['Among Us released', 2018], ['First Harry Potter book', 1997], ['First Star Wars film', 1977],
+    ['Toy Story released', 1995], ['Titanic (film) released', 1997], ['The Lion King released', 1994],
+    ['Avatar released', 2009], ['Avengers: Endgame released', 2019], ['Mickey Mouse first appeared', 1928],
+    ['Disneyland opened', 1955], ['MTV launched', 1981], ['Thriller album released', 1982],
+    ['Beatles\' first album', 1963], ['Columbus reached the Americas', 1492], ['US Declaration of Independence', 1776],
+    ['French Revolution began', 1789], ['Battle of Hastings', 1066], ['Magna Carta signed', 1215],
+    ['Battle of Grunwald', 1410], ['Fall of Constantinople', 1453], ['Luther\'s 95 Theses', 1517],
+    ['Shakespeare was born', 1564], ['Mayflower reached America', 1620], ['Baptism of Poland', 966],
+    ['Poland\'s 3 May Constitution', 1791], ['Battle of Waterloo', 1815], ['American Civil War ended', 1865],
+    ['Darwin\'s Origin of Species', 1859], ['Suez Canal opened', 1869], ['Telephone was patented', 1876],
+    ['Edison\'s light bulb', 1879], ['Statue of Liberty unveiled', 1886], ['Coca-Cola was invented', 1886],
+    ['Eiffel Tower completed', 1889], ['First modern Olympics', 1896], ['Wright brothers\' first flight', 1903],
+    ['Einstein\'s special relativity', 1905], ['The Titanic sank', 1912], ['World War I began', 1914],
+    ['Panama Canal opened', 1914], ['World War I ended', 1918], ['Poland regained independence', 1918],
+    ['Penicillin was discovered', 1928], ['First FIFA World Cup', 1930], ['Empire State Building opened', 1931],
+    ['Golden Gate Bridge opened', 1937], ['World War II began', 1939], ['World War II ended', 1945],
+    ['Elizabeth II was crowned', 1953], ['DNA double helix discovered', 1953], ['Sputnik launched', 1957],
+    ['LEGO brick patented', 1958], ['Barbie doll launched', 1959], ['Gagarin flew to space', 1961],
+    ['First heart transplant', 1967], ['First Moon landing', 1969], ['Rubik\'s Cube invented', 1974],
+    ['John Paul II became pope', 1978], ['Solidarity was founded', 1980], ['Chernobyl disaster', 1986],
+    ['The Berlin Wall fell', 1989], ['Hubble telescope launched', 1990], ['Mandela freed from prison', 1990],
+    ['Soviet Union dissolved', 1991], ['Channel Tunnel opened', 1994], ['Dolly the sheep cloned', 1996],
+    ['Poland joined NATO', 1999], ['Euro coins & notes arrived', 2002], ['Poland joined the EU', 2004],
+    ['Pluto stopped being a planet', 2006], ['Burj Khalifa opened', 2010], ['Curiosity landed on Mars', 2012],
+    ['Euro 2012 in Poland & Ukraine', 2012], ['Brexit referendum', 2016], ['Notre-Dame fire', 2019],
+    ['COVID-19 pandemic declared', 2020], ['James Webb telescope launched', 2021], ['Argentina won World Cup (Messi)', 2022],
+    ['Elizabeth II died', 2022], ['Lewandowski joined Barcelona', 2022],
   ];
   const TIERS = { bull: ['Bullseye', 'var(--bull)'], close: ['Close', 'var(--close)'], warm: ['Warm', 'var(--warm)'],
     cold: ['Cold', 'var(--cold)'], miss: ['Miss', 'var(--miss)'], time: ["Time's up", 'var(--miss)'] };
-  const ROUNDS = 7, TIME = 20, MAX_ALT = 10000;
+  const ROUNDS = 7, TIME = 20, M_PER_PT = 12, MAX_ALT = 9600;   // perfect day = 800 pts = 9,600 m (above Everest)
+  const THIS_YEAR = new Date().getFullYear();
 
   // ---------- helpers ----------
   function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0;
@@ -102,61 +207,95 @@
     return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   function hash(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }
   function shuffle(a, r) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-  function today() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const today = () => ymd(new Date());
+  const num = (v, dp) => (+v.toFixed(dp)).toLocaleString('en-US');
   function fmt(v, unit) {
-    if (unit === 'M') return v >= 1000 ? (v / 1000).toFixed(2).replace(/\.?0+$/, '') + ' bn' : v < 1 ? Math.round(v * 1000) + 'k' : (v < 20 ? +v.toFixed(1) : Math.round(v)) + ' M';
-    if (unit === 'kg' && v >= 10000) return Math.round(v / 1000) + ' t';
-    if (unit === 'kg' && v < 1) return Math.round(v * 1000) + ' g';
-    return (v < 10 ? +v.toFixed(1) : Math.round(v)).toLocaleString('en-US') + ' ' + unit;
+    if (unit === 'M') return v >= 1000 ? num(v / 1000, 2) + ' bn' : v < 1 ? num(v * 1000, 0) + 'k' : num(v, v < 20 ? 1 : 0) + ' M';
+    if (unit === 'kg') return v >= 10000 ? num(v / 1000, 0) + ' t' : v < 1 ? num(v * 1000, 0) + ' g' : num(v, v < 10 ? 1 : 0) + ' kg';
+    if (unit === 'km²') return v >= 1e6 ? num(v / 1e6, 2) + 'M km²' : v >= 1e4 ? num(v / 1000, 0) + 'k km²' : num(v, 0) + ' km²';
+    if (unit === 'km' && v >= 1e6) return num(v / 1e6, 2) + 'M km';
+    if (unit === 'min') return Math.floor(v / 60) + 'h ' + String(Math.round(v % 60)).padStart(2, '0') + 'm';
+    return num(v, v < 1 ? 2 : v < 10 ? 1 : 0) + ' ' + unit;
   }
-  function nice(v) { const p = Math.pow(10, Math.floor(Math.log10(v)) - 1); return Math.round(v / p) * p; }  // 2 sig figs
+  function roundSig(v, s) { const p = Math.pow(10, Math.floor(Math.log10(v)) - s + 1); return Math.round(v / p) * p; }
   const store = {
     get(k) { try { return JSON.parse(localStorage.getItem('climb.' + k)); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem('climb.' + k, JSON.stringify(v)); } catch (e) {} },
   };
 
-  // ---------- build a day's 7 rounds from a seed ----------
-  function buildGame(seedStr) {
-    const r = rng(hash(seedStr));
-    const cats = shuffle(Object.keys(CATS), r);
-    const years = shuffle(YEARS, r);
-    const plan = [cats[0], cats[1], 'year', cats[2], cats[3], 'year', cats[4]];
-    let yi = 0;
-    const rounds = plan.map(kind => {
-      if (kind === 'year') {
-        const [ev, y] = years[yi++];
-        const offs = shuffle([-25, -15, -10, -7, -5, -3, -2, 2, 3, 5, 7, 10, 15, 25], r).slice(0, 3);
-        // usually include the true year; sometimes only near misses, so it's an estimate
-        const opts = (r() < 0.75 ? [0, ...offs] : [offs[0], offs[1], offs[2], offs[0] > 0 ? -1 : 1]).map(o => y + o);
-        return { kind: 'year', prompt: ev + '?', target: y, opts: shuffle(opts, r).map(v => ({ name: String(v), v })) };
-      }
-      const c = CATS[kind];
-      const pool = shuffle(c.items, r), opts = [];
-      for (const it of pool) {                     // keep options clearly different (≥15% apart)
-        if (opts.every(o => Math.abs(Math.log(o[1] / it[1])) > 0.14)) opts.push(it);
-        if (opts.length === 4) break;
-      }
-      const anchor = opts[Math.floor(r() * 4)][1];
-      const target = nice(anchor * Math.exp((r() * 2 - 1) * 0.18));
-      return { kind, prompt: c.q, suffix: c.suffix, unit: c.unit, target, opts: opts.map(([name, v]) => ({ name, v })) };
-    });
-    return { rounds, golden: Math.floor(r() * ROUNDS) };
+  // ---------- scoring: the best option on screen is always worth 100 ----------
+  function dist(round, v) { return round.kind === 'year' ? Math.abs(v - round.target) : Math.abs(Math.log(v / round.target)); }
+  function bestDist(round) { return Math.min(...round.opts.map(o => dist(round, o.v))); }
+  function score(round, v) {
+    const extra = dist(round, v) - bestDist(round);          // how much worse than the best choice
+    if (extra < 1e-9) return { pts: 100, tier: 'bull' };
+    if (round.kind === 'year') {
+      return { pts: Math.round(100 * Math.exp(-extra / 6)),
+        tier: extra <= 3 ? 'close' : extra <= 10 ? 'warm' : extra <= 25 ? 'cold' : 'miss' };
+    }
+    return { pts: Math.round(100 * Math.exp(-3 * extra)),
+      tier: extra < 0.1 ? 'close' : extra < 0.3 ? 'warm' : extra < 0.7 ? 'cold' : 'miss' };
   }
 
-  function score(round, v) {
-    if (round.kind === 'year') {
-      const d = Math.abs(v - round.target);
-      const pts = Math.round(100 * Math.exp(-d / 8)) + (d === 0 ? 20 : 0);
-      return { pts, tier: d === 0 ? 'bull' : d <= 3 ? 'close' : d <= 10 ? 'warm' : d <= 25 ? 'cold' : 'miss' };
-    }
-    const d = Math.abs(Math.log(v / round.target));
-    const pts = Math.round(100 * Math.exp(-2.5 * d)) + (d < 0.02 ? 20 : 0);
-    return { pts, tier: d < 0.02 ? 'bull' : d < 0.1 ? 'close' : d < 0.3 ? 'warm' : d < 0.7 ? 'cold' : 'miss' };
+  // ---------- question building ----------
+  // recently used answers are avoided so practice rarely repeats
+  let recent = new Set(store.get('recent') || []);
+  function remember(keys) {
+    const arr = (store.get('recent') || []).filter(k => !keys.includes(k)).concat(keys);
+    const kept = arr.slice(-260);                             // ~ the last 35+ games
+    store.set('recent', kept); recent = new Set(kept);
   }
-  function bestOpt(round) {
-    let b = null, bs = -1;
-    for (const o of round.opts) { const s = score(round, o.v).pts; if (s > bs) { bs = s; b = o; } }
-    return b;
+
+  function numberRound(kind, r, avoid) {
+    const c = CATS[kind];
+    const pool = shuffle(c.items, r);
+    const fresh = pool.filter(it => !avoid.has(kind + ':' + it[0]));
+    const anchor = (fresh.length ? fresh : pool)[0];
+    let opts = [anchor];
+    for (const gap of [0.14, 0.08]) {                        // keep options clearly different
+      for (const it of pool) {
+        if (opts.length === 4) break;
+        if (opts.every(o => Math.abs(Math.log(o[1] / it[1])) > gap)) opts.push(it);
+      }
+      if (opts.length === 4) break;
+    }
+    // target sits near the anchor, so the anchor is clearly the best answer
+    const minGap = Math.min(...opts.slice(1).map(o => Math.abs(Math.log(o[1] / anchor[1]))));
+    const raw = anchor[1] * Math.exp((r() * 2 - 1) * minGap * 0.4);
+    let target = raw;
+    for (const s of [2, 3]) {
+      const t = roundSig(raw, s);
+      const d = opts.map(o => Math.abs(Math.log(o[1] / t)));
+      if (d[0] < Math.min(...d.slice(1)) * 0.75) { target = t; break; }
+    }
+    return { kind, key: kind + ':' + anchor[0], prompt: c.q, suffix: c.suffix, unit: c.unit, target,
+      opts: shuffle(opts, r).map(([name, v]) => ({ name, v })) };
+  }
+
+  function yearRound(r, avoid) {
+    const pool = shuffle(YEARS, r);
+    const fresh = pool.filter(e => !avoid.has('y:' + e[0]));
+    const [ev, y] = (fresh.length ? fresh : pool)[0];
+    // distinct distances, so exactly one option is the closest
+    const sizes = shuffle([1, 2, 3, 4, 5, 7, 10, 15, 25, 40], r).slice(0, 4);
+    const offs = sizes.map(s => { let o = r() < 0.5 ? -s : s; if (y + o > THIS_YEAR) o = -s; return o; });
+    const list = r() < 0.75 ? [0, offs[0], offs[1], offs[2]] : offs;   // sometimes the exact year isn't offered
+    return { kind: 'year', key: 'y:' + ev, prompt: ev + '?', target: y,
+      opts: shuffle(list, r).map(o => ({ name: String(y + o), v: y + o })) };
+  }
+
+  function buildGame(seedStr, avoidRecent) {
+    const r = rng(hash(seedStr));
+    const avoid = avoidRecent ? new Set(recent) : new Set();
+    const cats = shuffle(Object.keys(CATS), r);
+    const plan = [cats[0], cats[1], 'year', cats[2], cats[3], 'year', cats[4]];
+    const rounds = plan.map(kind => {
+      const rd = kind === 'year' ? yearRound(r, avoid) : numberRound(kind, r, avoid);
+      avoid.add(rd.key);
+      return rd;
+    });
+    return { rounds, golden: Math.floor(r() * ROUNDS) };
   }
 
   // ---------- state & rendering ----------
@@ -169,16 +308,17 @@
     return (pad + (track - pad * 2) * Math.min(1, a / MAX_ALT)) + 'px';
   }
   function setAlt(a) { plane.style.bottom = altY(a); }
-  // landmarks along the altitude line
   const marks = [[2500, '☁︎'], [8849, '▲']].map(([a, ch]) => {
     const m = document.createElement('div'); m.className = 'mark'; m.textContent = ch; m.dataset.a = a;
     document.getElementById('track').insertBefore(m, plane); return m;
   });
   function placeMarks() { marks.forEach(m => m.style.bottom = altY(+m.dataset.a)); }
   placeMarks();
+
   const altTxt = a => a.toLocaleString('en-US') + ' m';
   function header(extra) {
-    return '<div class="row"><span>' + (mode === 'daily' ? 'Daily ' : 'Practice ') + (idx + 1) + '/' + ROUNDS + '</span><span class="alt">' + altTxt(alt) + '</span></div>' + (extra || '');
+    return '<div class="row"><span>' + (mode === 'daily' ? 'Daily ' : 'Practice ') + (idx + 1) + '/' + ROUNDS +
+      '</span><span class="alt">' + altTxt(alt) + '</span></div>' + (extra || '');
   }
 
   function home() {
@@ -188,13 +328,14 @@
       '<div class="sub">Pick the closest answer.<br>Closer = higher climb.</div>' +
       (done ? '<div class="sub" style="margin-top:.3rem">Today: <span class="alt">' + altTxt(done.alt) + '</span></div>' : '') +
       (streak ? '<div class="gold">🔥 ' + streak + ' day streak</div>' : '') + '</div>' +
-      (done ? '<button class="big" id="go">Practice</button>' : '<button class="big" id="go">Play today</button>');
+      '<button class="big" id="go">' + (done ? 'Practice' : 'Play today') + '</button>';
     document.getElementById('go').onclick = () => start(done ? 'practice' : 'daily');
   }
 
   function start(m) {
     mode = m;
-    game = buildGame(m === 'daily' ? 'climb-' + today() : 'p-' + Date.now());
+    game = m === 'daily' ? buildGame('climb-' + today(), false) : buildGame('p-' + Date.now() + Math.random(), true);
+    remember(game.rounds.map(rd => rd.key));
     idx = 0; alt = 0; results = []; setAlt(0); ask();
   }
 
@@ -229,19 +370,20 @@
     const golden = idx === game.golden;
     if (golden) res = { pts: res.pts * 2, tier: res.tier };
     results.push(res.tier);
-    alt = Math.min(MAX_ALT * 2, alt + res.pts * 10);
+    alt += res.pts * M_PER_PT;
     setAlt(alt);
-    const best = bestOpt(rd);
+    const bd = bestDist(rd);
     const [tName, tCol] = TIERS[res.tier];
     main.innerHTML = header() +
       '<div style="text-align:center;margin:.15rem 0 .2rem"><span class="tier" style="color:' + tCol + '">' + tName + '</span> ' +
-      '<span class="pts">+' + res.pts * 10 + ' m</span>' + (golden ? '<div class="gold">★ Golden round ×2</div>' : '') +
+      '<span class="pts">+' + (res.pts * M_PER_PT).toLocaleString('en-US') + ' m</span>' +
+      (golden ? '<div class="gold">★ Golden round ×2</div>' : '') +
       (rd.kind === 'year' ? '<div class="fact">' + rd.prompt.replace(/\?$/, '') + ': ' + rd.target + '</div>' : '') +
       '</div><div class="opts" id="opts"></div>';
     const box = document.getElementById('opts');
     rd.opts.forEach(x => {
       const b = document.createElement('button');
-      b.className = (x === best ? 'best ' : '') + (x === o ? 'picked' : '');
+      b.className = (dist(rd, x.v) - bd < 1e-9 ? 'best ' : '') + (x === o ? 'picked' : '');
       b.innerHTML = '<span class="n">' + x.name + '</span>' + (rd.kind === 'year' ? '' : '<span class="v">' + fmt(x.v, rd.unit) + '</span>');
       b.style.pointerEvents = 'none';
       box.appendChild(b);
@@ -257,20 +399,17 @@
     const s = store.get('streak');
     if (!s) return 0;
     const y = new Date(); y.setDate(y.getDate() - 1);
-    const yStr = y.getFullYear() + '-' + String(y.getMonth() + 1).padStart(2, '0') + '-' + String(y.getDate()).padStart(2, '0');
-    return s.last === today() || s.last === yStr ? s.n : 0;
+    return s.last === today() || s.last === ymd(y) ? s.n : 0;
   }
 
   function finish() {
     if (mode === 'daily') {
       store.set('day-' + today(), { alt, results });
-      const n = streakNow();
-      const s = store.get('streak');
+      const n = streakNow(), s = store.get('streak');
       if (!s || s.last !== today()) store.set('streak', { last: today(), n: n + 1 });
-      const best = store.get('best') || 0;
-      if (alt > best) store.set('best', alt);
     }
-    const best = store.get('best') || alt;
+    const best = Math.max(store.get('best') || 0, alt);
+    store.set('best', best);
     const mark = alt >= 8849 ? 'Above Everest!' : alt >= 2500 ? 'Above the clouds' : alt >= 500 ? 'Over the rooftops' : 'Still on the runway';
     main.innerHTML = '<div class="center"><div class="sub">You reached</div><div class="title" style="font-size:1.7rem">' + altTxt(alt) + '</div>' +
       '<div class="gold">' + mark + '</div><div class="dots">' +
@@ -281,6 +420,8 @@
   }
 
   addEventListener('resize', () => { placeMarks(); setAlt(alt || 0); });
+  // exposed only for automated testing on a PC
+  window.__climb = { buildGame, score, bestDist, CATS, YEARS, fmt };
   home();
 })();
 </script>
