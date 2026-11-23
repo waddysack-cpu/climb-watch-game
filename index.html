@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="disabled-adaptations" content="watch">
+<title>Climb</title>
+<style>
+  :root {
+    --bg: #000; --fg: #fff; --muted: #8e8e93; --btn: #1c1c1e; --btn2: #2c2c2e;
+    --bull: #ffd60a; --close: #30d158; --warm: #ff9f0a; --cold: #64d2ff; --miss: #636366;
+  }
+  html { font-size: calc(min(100vw, 100vh) / 17); }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); overflow: hidden;
+    font-family: -apple-system, system-ui, sans-serif;
+    -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  #app { position: absolute; inset: 0; display: flex; }
+  /* altitude track on the left edge */
+  #track { width: 1.3rem; position: relative; flex: none; }
+  #track .line { position: absolute; left: 50%; top: 2rem; bottom: 2rem; width: 2px; margin-left: -1px;
+    background: linear-gradient(#64d2ff, #1c1c1e); border-radius: 1px; }
+  #plane { position: absolute; left: 0; width: 1.3rem; text-align: center; font-size: 0.95rem;
+    transition: bottom .9s cubic-bezier(.2,.8,.2,1); transform: translateY(50%) rotate(-45deg); }
+  /* generous insets: the watch screen has big rounded corners */
+  #main { flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 0.55rem 0.7rem 0.75rem 0.15rem; box-sizing: border-box; }
+  #main .row { padding: 0 0.6rem 0 0.4rem; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.85rem; color: var(--muted); }
+  .alt { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .timer { height: 3px; background: var(--btn2); border-radius: 2px; margin: 0.25rem 0 0.35rem; overflow: hidden; }
+  .timer i { display: block; height: 100%; background: var(--close); width: 100%; }
+  .prompt { font-size: 1.05rem; font-weight: 600; line-height: 1.2; margin-bottom: 0.4rem; }
+  .prompt b { color: var(--bull); white-space: nowrap; }
+  .opts { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; min-height: 0; justify-content: center; }
+  button { font: inherit; color: inherit; border: 0; background: var(--btn); border-radius: 0.6rem;
+    padding: 0 0.55rem; text-align: left; flex: 1; min-height: 1.9rem; max-height: 2.6rem;
+    font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; gap: 0.3rem; }
+  button:active { background: var(--btn2); }
+  button .n { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mark { position: absolute; left: 0; width: 1.3rem; text-align: center; font-size: 0.6rem; transform: translateY(50%); opacity: .55; }
+  button .v { color: var(--muted); font-size: 0.8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  button.best { box-shadow: inset 0 0 0 2px var(--close); }
+  button.picked { background: var(--btn2); }
+  button.picked .n::before { content: '› '; color: var(--bull); }
+  .big { flex: none; justify-content: center; text-align: center; background: #0a84ff; font-weight: 600; min-height: 2.2rem; }
+  .center { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 0.25rem; }
+  .title { font-size: 2rem; font-weight: 700; letter-spacing: 0.05em; }
+  .sub { color: var(--muted); font-size: 0.85rem; }
+  .tier { font-size: 1.2rem; font-weight: 700; }
+  .pts { font-size: 0.95rem; }
+  .gold { color: var(--bull); font-size: 0.8rem; font-weight: 600; }
+  .dots { display: flex; gap: 0.2rem; justify-content: center; margin: 0.2rem 0; }
+  .dots span { width: 0.7rem; height: 0.7rem; border-radius: 0.2rem; }
+  .fact { font-size: 0.8rem; color: var(--muted); margin: 0.1rem 0 0.3rem; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="track"><div class="line"></div><div id="plane">✈︎</div></div>
+  <div id="main"></div>
+</div>
+<script>
+(function () {
+  // ---------- facts (approximate, well-known values) ----------
+  const CATS = {
+    mountain: { q: 'Peak closest to', unit: 'm', items: [
+      ['Everest', 8849], ['K2', 8611], ['Aconcagua', 6961], ['Denali', 6190], ['Kilimanjaro', 5895],
+      ['Elbrus', 5642], ['Mont Blanc', 4806], ['Matterhorn', 4478], ['Mt Whitney', 4421], ['Mt Fuji', 3776],
+      ['Zugspitze', 2962], ['Mt Olympus', 2918], ['Rysy', 2499], ['Kosciuszko', 2228], ['Ben Nevis', 1345], ['Snowdon', 1085]] },
+    tower: { q: 'Building closest to', suffix: 'tall', unit: 'm', items: [
+      ['Burj Khalifa', 828], ['Tokyo Skytree', 634], ['CN Tower', 553], ['One World Trade', 541], ['Taipei 101', 508],
+      ['Petronas Towers', 452], ['Empire State', 443], ['Eiffel Tower', 330], ['Palace of Culture', 237],
+      ['Gateway Arch', 192], ['Space Needle', 184], ['Great Pyramid', 139], ['Big Ben tower', 96],
+      ['Statue of Liberty', 93], ['Tower of Pisa', 56]] },
+    animal: { q: 'Animal weighing about', unit: 'kg', items: [
+      ['Blue whale', 140000], ['African elephant', 6000], ['Hippo', 1500], ['Giraffe', 1000], ['Cow', 700],
+      ['Horse', 500], ['Polar bear', 450], ['Lion', 190], ['Gorilla', 160], ['Adult human', 70],
+      ['Emperor penguin', 30], ['Beaver', 20], ['Red fox', 6], ['House cat', 4.5], ['Chicken', 2.5],
+      ['Guinea pig', 1], ['Rat', 0.3]] },
+    river: { q: 'River closest to', suffix: 'long', unit: 'km', items: [
+      ['Nile', 6650], ['Amazon', 6400], ['Yangtze', 6300], ['Mekong', 4900], ['Mississippi', 3730], ['Volga', 3530],
+      ['Danube', 2850], ['Rhine', 1230], ['Vistula', 1047], ['Seine', 777], ['Hudson', 507], ['Thames', 346]] },
+    country: { q: 'Country with about', suffix: 'people', unit: 'M', items: [
+      ['India', 1440], ['China', 1410], ['USA', 340], ['Indonesia', 280], ['Brazil', 212], ['Japan', 124],
+      ['Germany', 84], ['UK', 68], ['Italy', 59], ['Spain', 48], ['Canada', 41], ['Poland', 37], ['Australia', 27],
+      ['Netherlands', 18], ['Greece', 10.4], ['Norway', 5.5], ['Iceland', 0.39]] },
+  };
+  const YEARS = [
+    ['First iPhone went on sale', 2007], ['First Moon landing', 1969], ['The Titanic sank', 1912],
+    ['The Berlin Wall fell', 1989], ['World War II ended', 1945], ['First Harry Potter book', 1997],
+    ['YouTube launched', 2005], ['Minecraft full release', 2011], ['Fortnite launched', 2017],
+    ['Columbus reached the Americas', 1492], ['First Star Wars film', 1977], ['Euro coins & notes arrived', 2002],
+    ['First modern Olympics', 1896], ["Wright brothers' first flight", 1903], ['Poland joined the EU', 2004],
+    ['Google was founded', 1998], ['First PlayStation (Japan)', 1994], ['Facebook launched', 2004],
+  ];
+  const TIERS = { bull: ['Bullseye', 'var(--bull)'], close: ['Close', 'var(--close)'], warm: ['Warm', 'var(--warm)'],
+    cold: ['Cold', 'var(--cold)'], miss: ['Miss', 'var(--miss)'], time: ["Time's up", 'var(--miss)'] };
+  const ROUNDS = 7, TIME = 20, MAX_ALT = 10000;
+
+  // ---------- helpers ----------
+  function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function hash(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }
+  function shuffle(a, r) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function today() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function fmt(v, unit) {
+    if (unit === 'M') return v >= 1000 ? (v / 1000).toFixed(2).replace(/\.?0+$/, '') + ' bn' : v < 1 ? Math.round(v * 1000) + 'k' : (v < 20 ? +v.toFixed(1) : Math.round(v)) + ' M';
+    if (unit === 'kg' && v >= 10000) return Math.round(v / 1000) + ' t';
+    if (unit === 'kg' && v < 1) return Math.round(v * 1000) + ' g';
+    return (v < 10 ? +v.toFixed(1) : Math.round(v)).toLocaleString('en-US') + ' ' + unit;
+  }
+  function nice(v) { const p = Math.pow(10, Math.floor(Math.log10(v)) - 1); return Math.round(v / p) * p; }  // 2 sig figs
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem('climb.' + k)); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem('climb.' + k, JSON.stringify(v)); } catch (e) {} },
+  };
+
+  // ---------- build a day's 7 rounds from a seed ----------
+  function buildGame(seedStr) {
+    const r = rng(hash(seedStr));
+    const cats = shuffle(Object.keys(CATS), r);
+    const years = shuffle(YEARS, r);
+    const plan = [cats[0], cats[1], 'year', cats[2], cats[3], 'year', cats[4]];
+    let yi = 0;
+    const rounds = plan.map(kind => {
+      if (kind === 'year') {
+        const [ev, y] = years[yi++];
+        const offs = shuffle([-25, -15, -10, -7, -5, -3, -2, 2, 3, 5, 7, 10, 15, 25], r).slice(0, 3);
+        // usually include the true year; sometimes only near misses, so it's an estimate
+        const opts = (r() < 0.75 ? [0, ...offs] : [offs[0], offs[1], offs[2], offs[0] > 0 ? -1 : 1]).map(o => y + o);
+        return { kind: 'year', prompt: ev + '?', target: y, opts: shuffle(opts, r).map(v => ({ name: String(v), v })) };
+      }
+      const c = CATS[kind];
+      const pool = shuffle(c.items, r), opts = [];
+      for (const it of pool) {                     // keep options clearly different (≥15% apart)
+        if (opts.every(o => Math.abs(Math.log(o[1] / it[1])) > 0.14)) opts.push(it);
+        if (opts.length === 4) break;
+      }
+      const anchor = opts[Math.floor(r() * 4)][1];
+      const target = nice(anchor * Math.exp((r() * 2 - 1) * 0.18));
+      return { kind, prompt: c.q, suffix: c.suffix, unit: c.unit, target, opts: opts.map(([name, v]) => ({ name, v })) };
+    });
+    return { rounds, golden: Math.floor(r() * ROUNDS) };
+  }
+
+  function score(round, v) {
+    if (round.kind === 'year') {
+      const d = Math.abs(v - round.target);
+      const pts = Math.round(100 * Math.exp(-d / 8)) + (d === 0 ? 20 : 0);
+      return { pts, tier: d === 0 ? 'bull' : d <= 3 ? 'close' : d <= 10 ? 'warm' : d <= 25 ? 'cold' : 'miss' };
+    }
+    const d = Math.abs(Math.log(v / round.target));
+    const pts = Math.round(100 * Math.exp(-2.5 * d)) + (d < 0.02 ? 20 : 0);
+    return { pts, tier: d < 0.02 ? 'bull' : d < 0.1 ? 'close' : d < 0.3 ? 'warm' : d < 0.7 ? 'cold' : 'miss' };
+  }
+  function bestOpt(round) {
+    let b = null, bs = -1;
+    for (const o of round.opts) { const s = score(round, o.v).pts; if (s > bs) { bs = s; b = o; } }
+    return b;
+  }
+
+  // ---------- state & rendering ----------
+  const main = document.getElementById('main'), plane = document.getElementById('plane');
+  let game, idx, alt, results, mode, tick, timeLeft;
+
+  function altY(a) {
+    const track = document.getElementById('track').clientHeight;
+    const pad = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2;  // matches .line inset
+    return (pad + (track - pad * 2) * Math.min(1, a / MAX_ALT)) + 'px';
+  }
+  function setAlt(a) { plane.style.bottom = altY(a); }
+  // landmarks along the altitude line
+  const marks = [[2500, '☁︎'], [8849, '▲']].map(([a, ch]) => {
+    const m = document.createElement('div'); m.className = 'mark'; m.textContent = ch; m.dataset.a = a;
+    document.getElementById('track').insertBefore(m, plane); return m;
+  });
+  function placeMarks() { marks.forEach(m => m.style.bottom = altY(+m.dataset.a)); }
+  placeMarks();
+  const altTxt = a => a.toLocaleString('en-US') + ' m';
+  function header(extra) {
+    return '<div class="row"><span>' + (mode === 'daily' ? 'Daily ' : 'Practice ') + (idx + 1) + '/' + ROUNDS + '</span><span class="alt">' + altTxt(alt) + '</span></div>' + (extra || '');
+  }
+
+  function home() {
+    clearInterval(tick); alt = 0; setAlt(0);
+    const done = store.get('day-' + today()), streak = streakNow();
+    main.innerHTML = '<div class="center"><div class="title">CLIMB</div>' +
+      '<div class="sub">Pick the closest answer.<br>Closer = higher climb.</div>' +
+      (done ? '<div class="sub" style="margin-top:.3rem">Today: <span class="alt">' + altTxt(done.alt) + '</span></div>' : '') +
+      (streak ? '<div class="gold">🔥 ' + streak + ' day streak</div>' : '') + '</div>' +
+      (done ? '<button class="big" id="go">Practice</button>' : '<button class="big" id="go">Play today</button>');
+    document.getElementById('go').onclick = () => start(done ? 'practice' : 'daily');
+  }
+
+  function start(m) {
+    mode = m;
+    game = buildGame(m === 'daily' ? 'climb-' + today() : 'p-' + Date.now());
+    idx = 0; alt = 0; results = []; setAlt(0); ask();
+  }
+
+  function ask() {
+    const rd = game.rounds[idx];
+    const promptHtml = rd.kind === 'year' ? rd.prompt
+      : rd.prompt + ' <b>' + fmt(rd.target, rd.unit) + '</b>' + (rd.suffix ? ' ' + rd.suffix : '');
+    main.innerHTML = header('<div class="timer"><i id="bar"></i></div>') +
+      '<div class="prompt">' + promptHtml + '</div><div class="opts" id="opts"></div>';
+    const box = document.getElementById('opts');
+    rd.opts.forEach(o => {
+      const b = document.createElement('button');
+      b.innerHTML = '<span class="n">' + o.name + '</span>';
+      b.onclick = () => answer(o);
+      box.appendChild(b);
+    });
+    timeLeft = TIME;
+    const bar = document.getElementById('bar');
+    clearInterval(tick);
+    tick = setInterval(() => {
+      timeLeft -= 0.1;
+      bar.style.width = Math.max(0, timeLeft / TIME * 100) + '%';
+      bar.style.background = timeLeft < 5 ? 'var(--warm)' : 'var(--close)';
+      if (timeLeft <= 0) answer(null);
+    }, 100);
+  }
+
+  function answer(o) {
+    clearInterval(tick);
+    const rd = game.rounds[idx];
+    let res = o ? score(rd, o.v) : { pts: 0, tier: 'time' };
+    const golden = idx === game.golden;
+    if (golden) res = { pts: res.pts * 2, tier: res.tier };
+    results.push(res.tier);
+    alt = Math.min(MAX_ALT * 2, alt + res.pts * 10);
+    setAlt(alt);
+    const best = bestOpt(rd);
+    const [tName, tCol] = TIERS[res.tier];
+    main.innerHTML = header() +
+      '<div style="text-align:center;margin:.15rem 0 .2rem"><span class="tier" style="color:' + tCol + '">' + tName + '</span> ' +
+      '<span class="pts">+' + res.pts * 10 + ' m</span>' + (golden ? '<div class="gold">★ Golden round ×2</div>' : '') +
+      (rd.kind === 'year' ? '<div class="fact">' + rd.prompt.replace(/\?$/, '') + ': ' + rd.target + '</div>' : '') +
+      '</div><div class="opts" id="opts"></div>';
+    const box = document.getElementById('opts');
+    rd.opts.forEach(x => {
+      const b = document.createElement('button');
+      b.className = (x === best ? 'best ' : '') + (x === o ? 'picked' : '');
+      b.innerHTML = '<span class="n">' + x.name + '</span>' + (rd.kind === 'year' ? '' : '<span class="v">' + fmt(x.v, rd.unit) + '</span>');
+      b.style.pointerEvents = 'none';
+      box.appendChild(b);
+    });
+    const next = document.createElement('button');
+    next.className = 'big'; next.style.marginTop = '.3rem';
+    next.textContent = idx + 1 < ROUNDS ? 'Next' : 'Land';
+    next.onclick = () => { idx++; idx < ROUNDS ? ask() : finish(); };
+    main.appendChild(next);
+  }
+
+  function streakNow() {
+    const s = store.get('streak');
+    if (!s) return 0;
+    const y = new Date(); y.setDate(y.getDate() - 1);
+    const yStr = y.getFullYear() + '-' + String(y.getMonth() + 1).padStart(2, '0') + '-' + String(y.getDate()).padStart(2, '0');
+    return s.last === today() || s.last === yStr ? s.n : 0;
+  }
+
+  function finish() {
+    if (mode === 'daily') {
+      store.set('day-' + today(), { alt, results });
+      const n = streakNow();
+      const s = store.get('streak');
+      if (!s || s.last !== today()) store.set('streak', { last: today(), n: n + 1 });
+      const best = store.get('best') || 0;
+      if (alt > best) store.set('best', alt);
+    }
+    const best = store.get('best') || alt;
+    const mark = alt >= 8849 ? 'Above Everest!' : alt >= 2500 ? 'Above the clouds' : alt >= 500 ? 'Over the rooftops' : 'Still on the runway';
+    main.innerHTML = '<div class="center"><div class="sub">You reached</div><div class="title" style="font-size:1.7rem">' + altTxt(alt) + '</div>' +
+      '<div class="gold">' + mark + '</div><div class="dots">' +
+      results.map(t => '<span style="background:' + TIERS[t][1] + '"></span>').join('') + '</div>' +
+      '<div class="sub">' + (mode === 'daily' ? '🔥 ' + streakNow() + ' day streak · ' : '') + 'best ' + altTxt(best) + '</div></div>' +
+      '<button class="big" id="go">Done</button>';
+    document.getElementById('go').onclick = home;
+  }
+
+  addEventListener('resize', () => { placeMarks(); setAlt(alt || 0); });
+  home();
+})();
+</script>
+</body>
+</html>
